@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 15px;
+      width: 360px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ✅ PERFECT BOX ALIGNMENT */
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      display: block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    textarea {
+      height: 80px;
+    }
+
+
+    /* GROUP ALIGNMENT */
+    #studentFields,
+    #workField {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    #studentFields > *,
+    #workField > * {
+      width: 100%;
+    }
+
+    button {
+      padding: 14px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    /* Popup */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-box {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Registration Form</h2>
+
+  <form id="form">
+
+    <select id="status" name="status" required>
+      <option value="">Select Status</option>
+      <option value="student">Student</option>
+      <option value="graduated">Graduated</option>
+      <option value="working">Working Professional</option>
+    </select>
+
+    <input type="text" name="fullname" placeholder="Full Name" required>
+    <input type="email" name="email" placeholder="Email">
+    <input type="tel" name="phone" placeholder="Phone">
+    <textarea name="address" placeholder="Address"></textarea>
+
+    <!-- Student Fields -->
+    <div id="studentFields">
+      <input type="text" name="college" placeholder="College Name">
+
+      <select name="department">
+        <option value="">Select Department</option>
+        <option>CSE</option>
+        <option>IT</option>
+        <option>ECE</option>
+        <option>AI/ML</option>
+      </select>
+
+      <!-- Year wrapped -->
+      <div id="yearField">
+        <select name="year">
+          <option value="">Year of Study</option>
+          <option>1st Year</option>
+          <option>2nd Year</option>
+          <option>3rd Year</option>
+          <option>4th Year</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Work Fields -->
+    <div id="workField">
+      <input type="text" name="company" placeholder="Company Name">
+
+      <select name="passout">
+        <option value="">Passed Out Year</option>
+        <option>2020</option>
+        <option>2021</option>
+        <option>2022</option>
+        <option>2023</option>
+        <option>2024</option>
+        <option>2025</option>
+      </select>
+    </div>
+
+    <button type="submit">Register</button>
+
+  </form>
+</div>
+
+<!-- Popup -->
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <h3>✅ Registered Successfully</h3>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbw3lI4SQHAk-tgoW63M6fLkSe9B7Nhcyrx_qE4E9VfUZpgABeNbORUGQe7liE4M2JhI/exec";
+
+const form = document.getElementById("form");
+const status = document.getElementById("status");
+const studentFields = document.getElementById("studentFields");
+const workField = document.getElementById("workField");
+const yearField = document.getElementById("yearField");
+
+/* Status Change */
+status.addEventListener("change", function () {
+
+  // reset
+  studentFields.style.display = "none";
+  workField.style.display = "none";
+  yearField.style.display = "block";
+
+  if (this.value === "student") {
+    studentFields.style.display = "flex";
+  }
+
+  else if (this.value === "graduated") {
+    studentFields.style.display = "flex";
+    workField.style.display = "flex";
+    yearField.style.display = "none";
+  }
+
+  else if (this.value === "working") {
+    workField.style.display = "flex";
+  }
+
+});
+
+/* Submit */
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  // Force empty fields to send "-"
+  ["college","department","year","company","passout"].forEach(field => {
+    if (!formData.get(field)) {
+      formData.set(field, "-");
+    }
+  });
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: formData
+  })
+  .then(() => {
+    document.getElementById("popup").style.display = "flex";
+    form.reset();
+  })
+  .catch(() => alert("Error"));
+});
+</script>
+
+</body>
+</html>
